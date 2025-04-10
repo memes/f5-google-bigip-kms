@@ -1,0 +1,107 @@
+# NOTE: This is a copy of v3.3.0.0 example configuration, modified to support
+# the specific use-cases in this repo. For ease of testing it uses GDM v2 Python
+# code that is retrieved from a URL, which is a potential security risk.
+# https://raw.githubusercontent.com/F5Networks/f5-google-gdm-templates-v2/refs/tags/v3.3.0.0/examples/modules/bigip-standalone/sample_bigip_standalone.yaml
+---
+# Copyright 2021 F5 Networks All rights reserved.
+#
+# Version 2.7.0.0s
+#
+# Example of the bigip-Standalone Usage.
+#
+# In this example, 3 interfaces are created.
+# The first 2 interfaces are configured with public ip's.
+# The second interface uses a static ip address.
+#
+# Required properties::
+# ['bigIpRuntimeInitConfig', 'bigIpRuntimeInitPackageUrl', 'imageName',
+# 'instanceType', 'name', 'network', 'region', 'subnetwork',
+# 'uniquestring', 'zone', ]
+#
+# Optional subnet properties (if not specified, compute.v1.instance defaults
+# are used or template defaults are used
+# https://cloud.google.com/compute/docs/reference/rest/v1/instances):
+# ['advancedMachineFeatures', 'canIpForward', 'confidentialInstanceConfig',
+# 'deletionProtection', 'description', 'disks', 'displayDevice',
+# 'guestAccelerators', 'hostname', 'labels', 'machineType', 'minCpuPlatform',
+# 'privateIpv6GoogleAccess', 'reservationAffinity', 'resourcePolicies',
+# 'scheduling', 'serviceAccounts', 'shieldedInstanceConfig',
+# 'shieldedInstanceIntegrityPolicy', 'tags' ]
+# additional networkInterfaces options:
+# [ 'description', 'networkIP', 'ipv6Address', 'networkTier', 'stackType',
+# 'queueCount', 'nicType', 'aliasIpRanges', 'ipv6AccessConfigs',
+# 'accessConfigs', 'name' ]
+
+imports:
+  - path: https://raw.githubusercontent.com/F5Networks/f5-google-gdm-templates-v2/refs/tags/v3.3.0.0/examples/modules/bigip-standalone/bigip_standalone.py
+resources:
+  - name: bigip_standalone.py
+    properties:
+      # Use the service account created by test harness
+      serviceAccounts:
+        - email: ${sa}
+          scopes:
+            - https://www.googleapis.com/auth/cloud-platform
+      # Add labels so tests can identify the instances
+      labels: ${labels}
+      # Encrypt boot disk with KMS keys
+      disks:
+        - deviceName: boot
+          type: PERSISTENT
+          boot: true
+          autoDelete: true
+          initializeParams:
+            sourceImage: https://www.googleapis.com/compute/v1/projects/f5-7626-networks-public/global/images/f5-bigip-17-1-2-1-0-0-2-payg-good-25mbps-241217063029
+            diskSizeGb: 120
+          diskEncryptionKey:
+            kmsKeyName: ${kms_key_name}
+      ### Standard template follows with some features disabled: CFE, alias IPs, etc.
+      # additionalMetadataTags:
+      #   bigip-peer-addr: 10.0.0.1
+      #   service-address-01-public-ip: 100.100.100.100
+      allowUsageAnalytics: true
+      bigIpRuntimeInitConfig: >-
+        '${jsonencode(yamldecode(runtime_init_config))}'
+      bigIpRuntimeInitPackageUrl: ${runtime_init_url}
+      hostname: bigip01.local
+      imageName: f5-bigip-17-1-2-1-0-0-2-payg-good-25mbps-241217063029
+      instanceType: n1-standard-4
+      name: bigip-vm-01
+      networkInterfaces:
+        - accessConfigs:
+            - name: External Nat
+              type: ONE_TO_ONE_NAT
+          description: Interface used for external traffic
+          network: >-
+            ${external_network}
+          subnetwork: >-
+            ${external_subnet}
+        - accessConfigs:
+            - name: Management Nat
+              type: ONE_TO_ONE_NAT
+          description: Interface used for management
+          network: >-
+            ${mgmt_network}
+          subnetwork: >-
+            ${mgmt_subnet}
+          # networkIP: 10.0.31.180
+          # aliasIpRanges:
+          #   - ipCidrRange: 10.0.31.181
+          #     subnetworkRangeName: myAlias Subnet
+        # - description: Interface used for internal traffic
+        #   network: >-
+        #     https://www.googleapis.com/compute/v1/projects/myProject/global/networks/myApplicationNetwork
+        #   subnetwork: >-
+        #     https://www.googleapis.com/compute/v1/projects/myProject/regions/us-west1/subnetworks/myApplicationSubnetwork
+      region: ${replace(zone, "/-[a-z]$/", "")}
+      # storageBuckets:
+      #   - name: cfe-bucket
+      #     labels:
+      #       f5_cloud_failover_label: bigip_high_availability_solution
+      tags:
+        items: []
+      targetInstances: []
+        # - name: my-target-instance
+      uniqueString: ${name}
+      zone: ${zone}
+    type: https://raw.githubusercontent.com/F5Networks/f5-google-gdm-templates-v2/refs/tags/v3.3.0.0/examples/modules/bigip-standalone/bigip_standalone.py

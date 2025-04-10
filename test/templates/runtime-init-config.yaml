@@ -1,0 +1,179 @@
+# Minimal onboarding template for automate testing of BIG-IP instances; only the management interface (nic1) and first
+# data-plane interface (nic0) will be configured. This is NOT a full example or suitable for production use.
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/F5Networks/f5-bigip-runtime-init/2.0.3/src/schema/base_schema.json
+# spell-checker: disable
+controls:
+  logLevel: info
+  extensionInstallDelayInMs: 60000
+extension_packages:
+  install_operations:
+    - extensionType: do
+      extensionHash:  9f30ed6e271d89f9a80ec4e4f189427071f023e45a4a01efc95a340f56350cbc
+      extensionVersion: 1.46.0
+      # yamllint disable-line rule:line-length
+      extensionUrl: https://github.com/F5Networks/f5-declarative-onboarding/releases/download/v1.46.0/f5-declarative-onboarding-1.46.0-7.noarch.rpm
+    - extensionType: as3
+      extensionHash: 3ab65685de36a5912a764957434b2d92cc8b6f8153080bbf9210c8dcbc621029
+      extensionVersion: 3.53.0
+      # yamllint disable-line rule:line-length
+      extensionUrl: https://github.com/F5Networks/f5-appsvcs-extension/releases/download/v3.53.0/f5-appsvcs-3.53.0-7.noarch.rpm
+extension_services:
+  service_operations:
+    - extensionType: do
+      type: inline
+      value:
+        # yamllint disable-line rule:line-length
+        $schema: https://raw.githubusercontent.com/F5Networks/f5-declarative-onboarding/v1.46.0/src/schema/1.46.0/base.schema.json
+        schemaVersion: 1.46.0
+        class: Device
+        async: true
+        label: shielded-big-ip-test-fixture
+        Common:
+          class: Tenant
+          system:
+            class: System
+            autoPhonehome: false
+          dns:
+            class: DNS
+            nameServers:
+              - 169.254.169.254
+          ntp:
+            class: NTP
+            timezone: UTC
+            servers:
+              - 169.254.169.254
+          admin:
+            class: User
+            userType: regular
+            password: '{{{ ADMIN_PASSWORD }}}'
+            shell: bash
+            keys: ["{{{ SSH_KEYS }}}"]
+          external:
+            class: VLAN
+            tag: 4094
+            mtu: '{{{ EXTERNAL_MTU }}}'
+            interfaces:
+              - name: '1.0'
+                tagged: false
+          external_self_ip:
+            class: SelfIp
+            address: '{{{ EXTERNAL_ADDRESS }}}/32'
+            vlan: external
+            allowService: none
+            trafficGroup: traffic-group-local-only
+          external_gw_rt:
+            class: Route
+            target: external
+            network: '{{{ EXTERNAL_GATEWAY_ADDRESS }}}/32'
+            mtu: '{{{ EXTERNAL_MTU }}}'
+          default:
+            class: Route
+            gw: '{{{ EXTERNAL_GATEWAY_ADDRESS }}}'
+            network: 'default'
+            mtu: '{{{ EXTERNAL_MTU }}}'
+          provision:
+            class: Provision
+            ltm: nominal
+    - extensionType: as3
+      type: inline
+      value:
+        # yamllint disable-line rule:line-length
+        # yaml-language-server: $schema=https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/main/schema/3.53.0/as3-schema.json
+        class: AS3
+        action: deploy
+        logLevel: info
+        persist: true
+        declaration:
+          class: ADC
+          $schema: https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/main/schema/3.53.0/as3-schema.json
+          schemaVersion: 3.53.0
+          label: shielded-big-ip-test-fixture
+          shielded_test:
+            class: Tenant
+            Shared:
+              class: Application
+              template: shared
+              okay_200:
+                class: iRule
+                label: its-okay
+                remark: Simple HTTP responder test probes
+                iRule: >-
+                  when HTTP_REQUEST { HTTP::respond 200 content OK Content-Type text/plain }
+            okay:
+              class: Application
+              service:
+                class: Service_HTTPS
+                shareAddresses: true
+                virtualAddresses:
+                  - '{{{ EXTERNAL_ADDRESS }}}/32'
+                virtualPort: 443
+                iRules:
+                  - use: /shielded_test/Shared/okay_200
+                serverTLS:
+                  bigip: /Common/clientssl
+                redirect80: false
+              http:
+                class: Service_HTTP
+                shareAddresses: true
+                virtualAddresses:
+                  - '{{{ EXTERNAL_ADDRESS }}}/32'
+                virtualPort: 80
+                iRules:
+                  - use: /shielded_test/Shared/okay_200
+post_onboard_enabled:
+  - name: save_config
+    type: inline
+    commands:
+      - tmsh save sys config
+runtime_parameters:
+  - name: ADMIN_PASSWORD
+    type: secret
+    secretProvider:
+      type: SecretsManager
+      environment: gcp
+      version: latest
+      secretId: ${password_secret_id}
+  - name: SSH_KEYS
+    type: static
+    value: '${ssh_pubkey}'
+  - name: EXTERNAL_ADDRESS
+    type: metadata
+    metadataProvider:
+      environment: gcp
+      type: network
+      index: 0
+      field: ip
+      ipcalc: address
+  - name: EXTERNAL_GATEWAY_ADDRESS
+    type: metadata
+    metadataProvider:
+      environment: gcp
+      type: network
+      field: ip
+      index: 0
+      ipcalc: first
+  - name: EXTERNAL_MTU
+    type: url
+    value: http://169.254.169.254/computeMetadata/v1/instance/network-interfaces/0/?recursive=true
+    query: mtu
+    returnType: number
+    headers:
+      - name: Metadata-Flavor
+        value: Google
+  - name: EXTERNAL_NETWORK_ADDRESS
+    type: metadata
+    metadataProvider:
+      environment: gcp
+      type: network
+      index: 0
+      field: ip
+      ipcalc: base
+  - name: EXTERNAL_NETWORK_BITMASK
+    type: metadata
+    metadataProvider:
+      environment: gcp
+      type: network
+      index: 0
+      field: ip
+      ipcalc: bitmask

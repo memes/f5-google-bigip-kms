@@ -1,0 +1,16 @@
+[project]
+name = "f5-google-bigip-kms"
+version = "0.1.0"
+description = "Deploy BIG-IP with KMS encrypted disk"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "google-cloud-compute>=1.29.0",
+    "pytest-testinfra[paramiko]>=10.2.2",
+    "requests>=2.32.3",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.2.0",
+]

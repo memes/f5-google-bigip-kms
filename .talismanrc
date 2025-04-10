@@ -11,4 +11,14 @@ fileignoreconfig:
 - filename: README.md
   ignore_detectors:
   - filecontent
+- filename: test/templates/runtime-init-config.yaml
+  checksum: a29388d42973bbadfebd305d175808b12b67bf0174cfb9360d7d2a4ec1f2d9e6
+- filename: test/main.tf
+  checksum: 933b072de7c49119c5dd6f82986e67f49d7c5492964576110441830f513790b6
+- filename: uv.lock
+  checksum: 90e9d6389d70968be34128a294fa71c22cac8ead9836366959de911b0dc472fc
+- filename: test/templates/gdmv2-standalone-config.yaml
+  checksum: 51d613f1e5a969e0f496ef53785220afbf7be5ec7958adb744b84cec064a134e
+- filename: conftest.py
+  checksum: 9124f05adb8997a5cebae600c3c1113292b1758ee179486f0c9758331accb242
 version: "1.0"

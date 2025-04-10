@@ -3,10 +3,6 @@
 .direnv
 .tool-versions
 
-# Ignore Ruby
-.bundle
-Gemfile.lock
-
 # Ignore Terraform state and automatic var files - except examples
 .terraform
 .terraform.lock.hcl
@@ -14,3 +10,15 @@ terraform.tfstate*
 *.auto.tfvars*
 terraform.tfvars*
 !terraform.tfvars.example
+
+# Ignore python stuff
+__pycache__
+.venv
+
+# Ignore generated files
+test/*-ssh
+test/*-ssh.pub
+test/*-ssh-config
+test/harness.json
+gdm_config.yaml
+user_data.yaml
