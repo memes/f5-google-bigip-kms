@@ -81,10 +81,15 @@ module "secret" {
   version    = "2.2.2"
   project_id = var.project_id
   id         = format("%s-password", var.name)
-  secret     = random_string.password.result
+  secret     = null
   accessors = [
     google_service_account.sa.member,
   ]
+}
+
+resource "google_secret_manager_secret_version" "secret" {
+  secret      = module.secret.id
+  secret_data = random_string.password.result
 }
 
 module "external" {
@@ -187,10 +192,19 @@ resource "google_compute_firewall" "test_mgmt_ingress" {
   ]
 }
 
+resource "random_id" "key_id" {
+  byte_length = 4
+  prefix      = var.name
+  keepers = {
+    project_id = var.project_id
+    name       = var.name
+  }
+}
+
 # NOTE: key rings are never fully destroyed and names cannot be reused.
 resource "google_kms_key_ring" "keyring" {
   project  = var.project_id
-  name     = var.name
+  name     = random_id.key_id.hex
   location = var.region
 }
 
@@ -242,8 +256,8 @@ resource "local_file" "ssh_config" {
 }
 
 resource "local_file" "gdm_config" {
-  filename = format("%s/../gdm_config.yaml", path.module)
-  content = templatefile(format("%s/templates/gdmv2-standalone-config.yaml", path.module), {
+  filename = format("%s/../%s-gdm-config.yaml", path.module, var.name)
+  content = templatefile(format("%s/templates/gdm-v2-standalone-config.yaml", path.module), {
     runtime_init_url = "https://github.com/F5Networks/f5-bigip-runtime-init/releases/download/2.0.3/f5-bigip-runtime-init-2.0.3-1.gz.run"
     runtime_init_config = templatefile(format("%s/templates/runtime-init-config.yaml", path.module), {
       password_secret_id = module.secret.secret_id
@@ -268,7 +282,7 @@ resource "local_file" "gdm_config" {
 }
 
 resource "local_file" "user_data" {
-  filename = format("%s/../user_data.yaml", path.module)
+  filename = format("%s/../%s-user-data.yaml", path.module, var.name)
   content = templatefile(format("%s/templates/cloud-config.yaml", path.module), {
     runtime_init_url       = "https://github.com/F5Networks/f5-bigip-runtime-init/releases/download/2.0.3/f5-bigip-runtime-init-2.0.3-1.gz.run"
     runtime_init_sha256sum = "e38fabfee268d6b965a7c801ead7a5708e5766e349cfa6a19dd3add52018549a"

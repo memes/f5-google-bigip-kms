@@ -14,11 +14,12 @@ terraform.tfvars*
 # Ignore python stuff
 __pycache__
 .venv
+.pytest_cache
 
 # Ignore generated files
 test/*-ssh
 test/*-ssh.pub
 test/*-ssh-config
 test/harness.json
-gdm_config.yaml
-user_data.yaml
+*-gdm-config.yaml
+*-user-data.yaml

@@ -3,10 +3,14 @@
     "version": "0.2",
     "language": "en",
     "words": [
+        "cloudkms",
+        "Decrypter",
         "direnv",
         "DOCKERHUB",
+        "Encrypter",
         "envrc",
         "fileignoreconfig",
+        "filterwarnings",
         "goarch",
         "gofumpt",
         "golangci",
@@ -15,18 +19,35 @@
         "hadolint",
         "hashicorp",
         "incpatch",
+        "jsonencode",
         "ldflags",
         "markdownlint",
+        "mgmt",
         "opencontainers",
+        "paramiko",
         "pastebin",
+        "postcondition",
+        "privkey",
+        "pycache",
+        "pytest",
+        "testinfra",
+        "tfstate",
+        "tfvars",
         "thumbsup",
+        "tmsh",
         "trimpath",
+        "uniquestring",
+        "urllib",
         "venv",
         "wontfix",
         "workdir",
+        "yamldecode",
         "yamllint"
     ],
     "flagWords": [
         "hte"
+    ],
+    "ignorePaths": [
+        ".devcontainer/devcontainer.json"
     ]
 }

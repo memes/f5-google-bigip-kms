@@ -12,7 +12,9 @@ A GitHub action will be run against your PR to ensure code standards have been
 applied.
 
 [pre-commit] is used to ensure that all files have consistent formatting and to
-avoid committing secrets.
+avoid committing secrets. If you use the devcontainer this is automated.
+
+## Install pre-commit manually
 
 1. Install [pre-commit] in a virtual python environment or globally: see [instructions](https://pre-commit.com/#installation)
 2. Fork and clone this repo
@@ -21,7 +23,7 @@ avoid committing secrets.
    E.g.
 
    ```shell
-   pip install -r requirements-dev.txt
+   pip install pre-commit
    pre-commit install --hook-type commit-msg --hook-type pre-commit
    ```
 

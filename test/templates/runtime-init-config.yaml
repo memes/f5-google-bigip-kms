@@ -9,7 +9,7 @@ controls:
 extension_packages:
   install_operations:
     - extensionType: do
-      extensionHash:  9f30ed6e271d89f9a80ec4e4f189427071f023e45a4a01efc95a340f56350cbc
+      extensionHash: 9f30ed6e271d89f9a80ec4e4f189427071f023e45a4a01efc95a340f56350cbc
       extensionVersion: 1.46.0
       # yamllint disable-line rule:line-length
       extensionUrl: https://github.com/F5Networks/f5-declarative-onboarding/releases/download/v1.46.0/f5-declarative-onboarding-1.46.0-7.noarch.rpm

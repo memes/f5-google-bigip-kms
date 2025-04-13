@@ -25,8 +25,8 @@ def project_id(harness_values: Dict[str, Any]) -> str:
 @pytest.fixture(scope="session")
 def prefix(harness_values: Dict[str, Any]) -> str:
     """Returns the test harness prefix string used to name resources."""
-    assert harness_values['prefix']
-    return harness_values['prefix']
+    assert harness_values['name']
+    return harness_values['name']
 
 
 @pytest.fixture(scope="session")
@@ -56,7 +56,7 @@ def label_filter(prefix: str):
     def _builder(labels: Dict[str, str]) -> str:
         """Builds a CEL filter that will match instances with the supplied labels."""
         filters = list(map(lambda kv: 'labels.{0} = "{1}"'.format(
-            kv[0], kv[1]), ({'group': prefix} | labels).items()))
+            kv[0], kv[1]), ({'identifier': prefix, 'use-case': 'kms-test'} | labels).items()))
         if len(filters) == 1:
             return filters[0]
         return ' AND '.join(map(lambda x: '({})'.format(x), filters))
@@ -121,9 +121,9 @@ def find_endpoints(project_id: str, zone: str, ssh_config: str):
 
 @pytest.fixture(scope="session")
 def bigip_is_ready():
-    is_config_ready = re.compile('^config\s+yes$', re.MULTILINE)
-    is_license_ready = re.compile('^license\s+yes$', re.MULTILINE)
-    is_provision_ready = re.compile('^provision\s+yes$', re.MULTILINE)
+    is_config_ready = re.compile('^config\\s+yes$', re.MULTILINE)
+    is_license_ready = re.compile('^license\\s+yes$', re.MULTILINE)
+    is_provision_ready = re.compile('^provision\\s+yes$', re.MULTILINE)
 
     def _builder(name: str, host: testinfra.host.Host) -> None:
         stdout = host.check_output('tmsh show /sys ready')
