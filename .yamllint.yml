@@ -2,6 +2,12 @@
 extends: default
 
 rules:
+  comments:
+    ignore: |
+      test/templates/cloud-config.yaml
+  document-start:
+    ignore: |
+      test/templates/runtime-init-config.yaml
   line-length:
     max: 120
     ignore: |

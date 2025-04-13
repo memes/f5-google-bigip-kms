@@ -12,7 +12,7 @@ fileignoreconfig:
   ignore_detectors:
   - filecontent
 - filename: test/templates/runtime-init-config.yaml
-  checksum: a29388d42973bbadfebd305d175808b12b67bf0174cfb9360d7d2a4ec1f2d9e6
+  checksum: 226056b8ae5f3f3570a3a4670de156fad9fd10e55653c75506ad6d863ae59bf0
 - filename: test/main.tf
   checksum: 8551617c969214b2eb31c860c180df1d87be9df215179707ad58b21fdcdf832d
 - filename: uv.lock
@@ -21,4 +21,8 @@ fileignoreconfig:
   checksum: 51d613f1e5a969e0f496ef53785220afbf7be5ec7958adb744b84cec064a134e
 - filename: conftest.py
   checksum: 9124f05adb8997a5cebae600c3c1113292b1758ee179486f0c9758331accb242
+- filename: test/README.md
+  checksum: 811115274bdb5482844df86bf09fee5cfb7963fcdf44dc2b36241af569c32205
+  ignore_detectors:
+  - filecontent
 version: "1.0"

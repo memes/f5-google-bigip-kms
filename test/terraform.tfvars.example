@@ -1,0 +1,11 @@
+# The name (or prefix) to use for resources created by the test harness
+name       = "my-test-name"
+
+# The GCP project where resources will be created
+
+project_id = "my-project-id"
+
+# Optional labels to add to GCP resources
+labels = {
+  owner = "my_name"
+}

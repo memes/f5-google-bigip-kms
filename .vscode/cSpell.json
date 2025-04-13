@@ -19,6 +19,7 @@
         "hadolint",
         "hashicorp",
         "incpatch",
+        "jsonencode",
         "ldflags",
         "markdownlint",
         "mgmt",
@@ -35,10 +36,12 @@
         "thumbsup",
         "tmsh",
         "trimpath",
+        "uniquestring",
         "urllib",
         "venv",
         "wontfix",
         "workdir",
+        "yamldecode",
         "yamllint"
     ],
     "flagWords": [
