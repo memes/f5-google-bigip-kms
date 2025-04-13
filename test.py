@@ -4,7 +4,7 @@ import pytest
 import requests
 from testinfra.host import Host
 
-labels = {'use-case': 'kms-test'}
+labels = {}
 
 
 @pytest.fixture

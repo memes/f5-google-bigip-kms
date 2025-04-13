@@ -1,0 +1,8 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 120
+    ignore: |
+      test/templates/gdm-v2-standalone-config.yaml

@@ -14,7 +14,7 @@ fileignoreconfig:
 - filename: test/templates/runtime-init-config.yaml
   checksum: a29388d42973bbadfebd305d175808b12b67bf0174cfb9360d7d2a4ec1f2d9e6
 - filename: test/main.tf
-  checksum: 933b072de7c49119c5dd6f82986e67f49d7c5492964576110441830f513790b6
+  checksum: 8551617c969214b2eb31c860c180df1d87be9df215179707ad58b21fdcdf832d
 - filename: uv.lock
   checksum: 90e9d6389d70968be34128a294fa71c22cac8ead9836366959de911b0dc472fc
 - filename: test/templates/gdmv2-standalone-config.yaml

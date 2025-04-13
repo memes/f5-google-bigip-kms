@@ -14,3 +14,9 @@ dependencies = [
 dev = [
     "pre-commit>=4.2.0",
 ]
+
+[tool.pytest.ini_options]
+log_cli = true
+filterwarnings = [
+    "ignore::urllib3.exceptions.InsecureRequestWarning",
+]
