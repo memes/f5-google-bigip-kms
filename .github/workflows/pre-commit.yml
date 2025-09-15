@@ -24,7 +24,7 @@ jobs:
       TFLINT_VERSION: 0.56.0
       TOFU_VERSION: 1.9.0
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: install talisman
         run: |
           sudo curl -sLo /usr/local/bin/talisman https://github.com/thoughtworks/talisman/releases/download/v${{ env.TALISMAN_VERSION }}/talisman_linux_amd64
